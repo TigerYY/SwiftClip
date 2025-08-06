@@ -1,10 +1,18 @@
-# 智剪蜂 (VocalCut) 🎬✨# 智剪蜂 - 智能视频剪辑系统
+# SwiftClip - 智能视频剪辑系统 🎬✨
 
-![智剪蜂](frontend/public/logo192.png)
+[![GitHub Stars](https://img.shields.io/github/stars/TigerYY/SwiftClip?style=social)](https://github.com/TigerYY/SwiftClip)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://reactjs.org/)
+
+![SwiftClip](https://raw.githubusercontent.com/TigerYY/SwiftClip/master/frontend/public/logo192.png)
 
 ## 项目简介
 
-智剪蜂是一款基于AI的智能视频剪辑工具，专为口播视频设计。它能自动识别视频中的语音内容，分析语义重要性，并智能剪辑出精华内容，大幅提升视频观看效率。
+SwiftClip（智剪蜂）是一款基于AI的智能视频剪辑工具，专为口播视频设计。它能自动识别视频中的语音内容，分析语义重要性，并智能剪辑出精华内容，大幅提升视频观看效率。
+
+🌟 **在线演示**: [https://swiftclip-demo.vercel.app](https://github.com/TigerYY/SwiftClip)
+📖 **完整文档**: [https://github.com/TigerYY/SwiftClip/wiki](https://github.com/TigerYY/SwiftClip/wiki)
 
 ### 核心功能
 
@@ -39,8 +47,8 @@
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/yourusername/smart-video-cutter.git
-cd smart-video-cutter
+git clone https://github.com/TigerYY/SwiftClip.git
+cd SwiftClip
 ```
 
 2. 安装依赖
@@ -113,8 +121,10 @@ cd smart-video-cutter
 
 ## 联系方式
 
-- 项目维护者：[Your Name](mailto:your.email@example.com)
-- 项目主页：[GitHub](https://github.com/yourusername/smart-video-cutter)
+- 项目维护者：[TigerYY](https://github.com/TigerYY)
+- 项目主页：[GitHub](https://github.com/TigerYY/SwiftClip)
+- 问题反馈：[Issues](https://github.com/TigerYY/SwiftClip/issues)
+- 功能建议：[Discussions](https://github.com/TigerYY/SwiftClip/discussions)
 
 ## 致谢
 
@@ -123,7 +133,19 @@ cd smart-video-cutter
 - [FastAPI](https://fastapi.tiangolo.com/) - 后端框架
 - [React](https://reactjs.org/) - 前端框架
 
-**智能视频剪辑工具 - 让长视频秒变精华短片**
+## 🚀 快速体验
+
+```bash
+# 一键安装并启动
+git clone https://github.com/TigerYY/SwiftClip.git
+cd SwiftClip
+./install_ai_full.sh
+./start_ai_full.sh
+
+# 访问 http://localhost:3000 开始使用
+```
+
+**SwiftClip - 让长视频秒变精华短片** 🎯
 
 基于AI的自动视频剪辑系统，能够智能分析视频内容，自动识别重要片段，生成高质量的精简视频。
 
@@ -409,14 +431,30 @@ status = requests.get(f'http://localhost:8000/status/{file_id}')
 ### 开发环境设置
 ```bash
 # 克隆项目
-git clone <repository-url>
-cd 智能剪辑
+git clone https://github.com/TigerYY/SwiftClip.git
+cd SwiftClip
 
 # 开发模式安装
 ./install_ai_full.sh
 
 # 运行测试
-./test_ai_full.py
+python test_ai_full.py
+
+# 启动开发服务器
+./start_ai_full.sh
+```
+
+### 提交代码
+```bash
+# 创建功能分支
+git checkout -b feature/your-feature-name
+
+# 提交更改
+git add .
+git commit -m "feat: add your feature description"
+
+# 推送并创建PR
+git push origin feature/your-feature-name
 ```
 
 ### 代码规范
@@ -440,6 +478,38 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ---
 
-**智剪蜂 - 让视频剪辑更智能！** 🎬✨
+## 🌟 项目亮点
+
+- ✅ **零配置启动**: 一键安装脚本，5分钟内完成部署
+- ✅ **智能识别**: 基于Whisper的高精度语音识别
+- ✅ **语义理解**: 智能分析内容重要性和冗余度
+- ✅ **自动剪辑**: AI驱动的视频片段选择和拼接
+- ✅ **多格式支持**: MP4/AVI/MOV/MKV等主流格式
+- ✅ **实时预览**: Web界面实时查看处理进度
+- ✅ **批量处理**: 支持多文件队列处理
+- ✅ **开源免费**: MIT许可证，完全开源
+
+## 📈 路线图
+
+- [ ] 支持更多语言（英语、日语等）
+- [ ] 添加视频字幕生成功能
+- [ ] 集成更多AI模型选择
+- [ ] 支持云端部署和API服务
+- [ ] 移动端应用开发
+- [ ] 视频内容标签和分类
+
+## ⭐ Star History
+
+如果这个项目对你有帮助，请给我们一个Star！⭐
+
+[![Star History Chart](https://api.star-history.com/svg?repos=TigerYY/SwiftClip&type=Date)](https://star-history.com/#TigerYY/SwiftClip&Date)
+
+---
+
+**SwiftClip - 让视频剪辑更智能！** 🎬✨
 
 *基于AI的下一代视频处理工具，让每个人都能轻松制作专业级短视频。*
+
+<div align="center">
+  <sub>Built with ❤️ by <a href="https://github.com/TigerYY">TigerYY</a></sub>
+</div>
