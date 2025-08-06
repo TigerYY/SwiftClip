@@ -1,0 +1,80 @@
+# 智剪蜂 - Apple M4芯片优化配置
+# MacBook Air M4专用AI性能配置
+
+# AI模型配置 - M4优化
+WHISPER_MODEL=base
+# M4芯片可以处理更大的模型
+WHISPER_LARGE_MODEL=medium
+USE_GPU=true
+USE_MPS=true
+AI_MODE=full
+
+# M4芯片性能优化
+PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0
+PYTORCH_ENABLE_MPS_FALLBACK=1
+MPS_AVAILABLE=true
+HIGH_PERFORMANCE_MODE=true
+APPLE_M4_OPTIMIZED=true
+
+# 网络和下载优化
+HF_ENDPOINT=https://hf-mirror.com
+HUGGINGFACE_HUB_CACHE=~/.cache/huggingface
+TRANSFORMERS_OFFLINE=0
+# 网络超时设置
+HF_HUB_DOWNLOAD_TIMEOUT=300
+WHISPER_DOWNLOAD_ROOT=~/.cache/whisper
+
+# 内存优化 - M4统一内存架构
+HUGGINGFACE_CACHE_DIR=~/.cache/huggingface
+WHISPER_CACHE_DIR=~/.cache/whisper
+TRANSFORMERS_CACHE=~/.cache/huggingface/transformers
+
+# 模型加载优化
+LAZY_MODEL_LOADING=true
+PRELOAD_MODELS=false
+# 避免启动时加载模型，减少网络依赖
+SKIP_MODEL_PRELOAD=true
+
+# Python警告抑制
+PYTHONWARNINGS=ignore::FutureWarning
+TOKENIZERS_PARALLELISM=false
+
+# 处理配置 - M4多核优化
+MAX_WORKERS=8
+# M4的高效核心数量
+EFFICIENT_CORES=4
+PERFORMANCE_CORES=4
+CHUNK_SIZE=60
+# M4可以处理更大的音频块
+OVERLAP_SIZE=10
+
+# 视频处理优化 - M4媒体引擎
+FFMPEG_THREADS=8
+# 启用硬件加速
+ENABLE_HARDWARE_ACCELERATION=true
+# M4的视频编解码器
+VIDEO_CODEC=h264_videotoolbox
+AUDIO_CODEC=aac_at
+
+# AI推理优化
+BATCH_SIZE=4
+# M4可以支持更大的批处理
+MAX_BATCH_SIZE=8
+INFERENCE_THREADS=8
+
+# 模型缓存策略
+MODEL_CACHE_SIZE=2048
+# M4大内存支持更多模型缓存
+PRELOAD_MODELS=true
+KEEP_MODELS_IN_MEMORY=true
+
+# 网络和API优化
+API_TIMEOUT=300
+MAX_UPLOAD_SIZE=500MB
+# M4可以处理更大的文件
+CONCURRENT_REQUESTS=4
+
+# 调试和监控
+LOG_LEVEL=INFO
+ENABLE_PERFORMANCE_MONITORING=true
+PROFILE_AI_OPERATIONS=false

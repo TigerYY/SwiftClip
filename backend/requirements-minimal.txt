@@ -1,0 +1,18 @@
+# 智剪蜂 MVP 最小依赖包
+# 仅包含运行基本功能所需的核心依赖
+
+# Web框架
+fastapi==0.104.1
+uvicorn==0.24.0
+
+# 文件处理
+python-multipart==0.0.6
+
+# HTTP请求
+requests==2.31.0
+
+# 环境配置
+python-dotenv==1.0.0
+
+# 基础数据处理
+numpy==1.24.3

@@ -1,0 +1,15 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple, https://mirrors.aliyun.com/pypi/simple/, https://pypi.mirrors.ustc.edu.cn/simple/
+Requirement already satisfied: pydantic in ./venv/lib/python3.13/site-packages (2.11.7)
+Collecting pydantic-settings
+  Downloading https://mirrors.ustc.edu.cn/pypi/packages/58/f0/427018098906416f580e3cf1366d3b1abfb408a0652e9f31600c24a1903c/pydantic_settings-2.10.1-py3-none-any.whl (45 kB)
+Collecting sqlalchemy
+  Downloading https://mirrors.ustc.edu.cn/pypi/packages/e5/a1/9d8c93434d1d983880d976400fcb7895a79576bd94dca61c3b7b90b1ed0d/sqlalchemy-2.0.42-cp313-cp313-macosx_11_0_arm64.whl (2.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 17.7 MB/s  0:00:00
+Requirement already satisfied: annotated-types>=0.6.0 in ./venv/lib/python3.13/site-packages (from pydantic) (0.7.0)
+Requirement already satisfied: pydantic-core==2.33.2 in ./venv/lib/python3.13/site-packages (from pydantic) (2.33.2)
+Requirement already satisfied: typing-extensions>=4.12.2 in ./venv/lib/python3.13/site-packages (from pydantic) (4.14.1)
+Requirement already satisfied: typing-inspection>=0.4.0 in ./venv/lib/python3.13/site-packages (from pydantic) (0.4.1)
+Requirement already satisfied: python-dotenv>=0.21.0 in ./venv/lib/python3.13/site-packages (from pydantic-settings) (1.0.0)
+Installing collected packages: sqlalchemy, pydantic-settings
+
+Successfully installed pydantic-settings-2.10.1 sqlalchemy-2.0.42

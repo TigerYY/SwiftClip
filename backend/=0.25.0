@@ -1,0 +1,36 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple, https://mirrors.aliyun.com/pypi/simple/, https://pypi.mirrors.ustc.edu.cn/simple/
+Collecting accelerate
+  Downloading https://mirrors.ustc.edu.cn/pypi/packages/9f/1c/a17fb513aeb684fb83bef5f395910f53103ab30308bbdd77fd66d6698c46/accelerate-1.9.0-py3-none-any.whl (367 kB)
+Requirement already satisfied: numpy<3.0.0,>=1.17 in ./venv/lib/python3.13/site-packages (from accelerate) (2.3.2)
+Collecting packaging>=20.0 (from accelerate)
+  Using cached https://mirrors.ustc.edu.cn/pypi/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl (66 kB)
+Collecting psutil (from accelerate)
+  Using cached https://mirrors.ustc.edu.cn/pypi/packages/04/8b/30f930733afe425e3cbfc0e1468a30a18942350c1a8816acfade80c005c4/psutil-7.0.0-cp36-abi3-macosx_11_0_arm64.whl (239 kB)
+Requirement already satisfied: pyyaml in ./venv/lib/python3.13/site-packages (from accelerate) (6.0.2)
+Requirement already satisfied: torch>=2.0.0 in ./venv/lib/python3.13/site-packages (from accelerate) (2.7.1)
+Collecting huggingface_hub>=0.21.0 (from accelerate)
+  Downloading https://mirrors.ustc.edu.cn/pypi/packages/59/a8/4677014e771ed1591a87b63a2392ce6923baf807193deef302dcfde17542/huggingface_hub-0.34.3-py3-none-any.whl (558 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 558.8/558.8 kB 27.8 MB/s  0:00:00
+Collecting safetensors>=0.4.3 (from accelerate)
+  Using cached https://mirrors.ustc.edu.cn/pypi/packages/b8/3b/11f1b4a2f5d2ab7da34ecc062b0bc301f2be024d110a6466726bec8c055c/safetensors-0.5.3-cp38-abi3-macosx_11_0_arm64.whl (418 kB)
+Requirement already satisfied: filelock in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate) (3.18.0)
+Requirement already satisfied: fsspec>=2023.5.0 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate) (2025.7.0)
+Requirement already satisfied: requests in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate) (2.31.0)
+Requirement already satisfied: tqdm>=4.42.1 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate) (4.66.1)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./venv/lib/python3.13/site-packages (from huggingface_hub>=0.21.0->accelerate) (4.14.1)
+Collecting hf-xet<2.0.0,>=1.1.3 (from huggingface_hub>=0.21.0->accelerate)
+  Downloading https://mirrors.ustc.edu.cn/pypi/packages/51/a3/fa5897099454aa287022a34a30e68dbff0e617760f774f8bd1db17f06bd4/hf_xet-1.1.7-cp37-abi3-macosx_11_0_arm64.whl (2.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 28.7 MB/s  0:00:00
+Requirement already satisfied: setuptools in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate) (80.9.0)
+Requirement already satisfied: sympy>=1.13.3 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate) (1.14.0)
+Requirement already satisfied: networkx in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate) (3.5)
+Requirement already satisfied: jinja2 in ./venv/lib/python3.13/site-packages (from torch>=2.0.0->accelerate) (3.1.6)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./venv/lib/python3.13/site-packages (from sympy>=1.13.3->torch>=2.0.0->accelerate) (1.3.0)
+Requirement already satisfied: MarkupSafe>=2.0 in ./venv/lib/python3.13/site-packages (from jinja2->torch>=2.0.0->accelerate) (3.0.2)
+Requirement already satisfied: charset-normalizer<4,>=2 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate) (3.4.2)
+Requirement already satisfied: idna<4,>=2.5 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in ./venv/lib/python3.13/site-packages (from requests->huggingface_hub>=0.21.0->accelerate) (2025.8.3)
+Installing collected packages: safetensors, psutil, packaging, hf-xet, huggingface_hub, accelerate
+
+Successfully installed accelerate-1.9.0 hf-xet-1.1.7 huggingface_hub-0.34.3 packaging-25.0 psutil-7.0.0 safetensors-0.5.3
