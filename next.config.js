@@ -3,14 +3,14 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['fluent-ffmpeg', '@ffmpeg-installer/ffmpeg'],
   },
-  webpack: (config) => {
+  webpack: config => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
       path: false,
-    };
-    return config;
+    }
+    return config
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

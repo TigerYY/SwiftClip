@@ -10,11 +10,7 @@ export const metadata: Metadata = {
   keywords: '视频压缩, 口播, AI剪辑, 内容创作, 知识博主',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
       <body className={inter.className}>{children}</body>

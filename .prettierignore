@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+dist
+build
+*.log
+.env*
+uploads/
+openspec/
+*.md

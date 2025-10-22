@@ -4,6 +4,10 @@ import { join, basename } from 'path'
 import { existsSync, unlinkSync } from 'fs'
 import { ServerAudioProcessor } from './audioProcessor'
 import { WhisperService, WhisperTranscription } from './whisperService'
+import { SemanticAnalyzer } from '../semanticAnalyzer'
+import { ErrorFactory } from './errorHandler'
+import { logger, logPerformance } from './logger'
+import { PerformanceMonitor } from './performanceMonitor'
 
 const execAsync = promisify(exec)
 
@@ -13,124 +17,146 @@ export interface VideoProcessingResult {
   compressedDuration: number
   compressionRatio: string
   outputFilename: string
-  processingSteps: Array<{
-    step: string
-    completed: boolean
-    message: string
-  }>
-  analysisResult?: {
-    totalSegments: number
-    importantSegments: number
-    redundantSegments: number
-    summary: string
-  }
+  transcription: string
+  summary: string
 }
 
 export class ServerVideoProcessor {
-  /**
-   * 处理视频文件
-   */
-  static async processVideo(
-    inputPath: string,
-    targetDuration: number = 300
-  ): Promise<VideoProcessingResult> {
-    const filename = basename(inputPath)
-    const outputFilename = `compressed-${filename}`
-    const outputPath = join(process.cwd(), 'uploads', outputFilename)
-
-    let audioPath: string | null = null
-    let transcription: WhisperTranscription | null = null
+  static async processVideo(filePath: string, requestId?: string): Promise<VideoProcessingResult> {
+    const startTime = Date.now()
+    const operationId = requestId || `video_processing_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    
+    logger.info('Starting video processing', { filePath }, operationId)
 
     try {
-      // 步骤1: 获取视频时长
-      const originalDuration = await ServerAudioProcessor.getVideoDuration(inputPath)
-      
-      // 步骤2: 提取音频
-      audioPath = await ServerAudioProcessor.extractAudio(inputPath)
-      
-      // 步骤3: 语音识别（使用whisper-node）
-      console.log('开始语音识别...')
-      transcription = await WhisperService.transcribeAudio(audioPath)
-      console.log('语音识别完成，识别文本长度:', transcription.text.length)
-      
-      // 步骤4: 语义分析
-      const analysisResult = WhisperService.analyzeTranscription(transcription)
-      
-      // 步骤5: 视频压缩（基于分析结果）
-      await this.compressVideo(inputPath, outputPath, targetDuration)
-      
-      // 步骤6: 清理临时文件
-      if (audioPath) {
-        ServerAudioProcessor.cleanupFile(audioPath)
+      // 检查输入文件是否存在
+      if (!existsSync(filePath)) {
+        throw ErrorFactory.fileNotFound(filePath)
       }
 
-      // 计算压缩后时长
-      const compressedDuration = await ServerAudioProcessor.getVideoDuration(outputPath)
-      
-      return {
+      logger.debug('Input file exists, starting processing steps', {}, operationId)
+
+      // 步骤1: 提取音频
+      logger.info('Step 1: Extracting audio', {}, operationId)
+      const audioPath = await ServerAudioProcessor.extractAudio(filePath)
+      logger.debug('Audio extracted successfully', { audioPath }, operationId)
+
+      // 步骤2: 语音转文字
+      logger.info('Step 2: Transcribing audio', {}, operationId)
+      const transcription = await WhisperService.transcribeAudio(audioPath)
+      logger.debug('Transcription completed', { 
+        segmentCount: transcription.segments?.length || 0,
+        language: transcription.language 
+      }, operationId)
+
+      // 步骤3: 语义分析
+      logger.info('Step 3: Analyzing transcription', {}, operationId)
+      const analysisResult = WhisperService.analyzeTranscription(transcription)
+      logger.debug('Analysis completed', {
+        importantSegments: analysisResult.importantSegments || 0,
+        redundantSegments: analysisResult.redundantSegments || 0
+      }, operationId)
+
+      // 步骤4: 视频压缩
+      logger.info('Step 4: Compressing video', {}, operationId)
+      const outputFilename = `compressed_${Date.now()}_${basename(filePath)}`
+      const outputPath = join(process.cwd(), 'uploads', outputFilename)
+
+      await this.compressVideo(filePath, outputPath, analysisResult, undefined, operationId)
+      logger.info('Video compression completed', { outputPath }, operationId)
+
+      // 清理临时文件
+      this.cleanupTempFiles([audioPath], operationId)
+
+      const result: VideoProcessingResult = {
         success: true,
-        originalDuration,
-        compressedDuration,
-        compressionRatio: `${((compressedDuration / originalDuration) * 100).toFixed(1)}%`,
         outputFilename,
-        processingSteps: [
-          { step: 'analyzing_video', completed: true, message: '视频分析完成' },
-          { step: 'speech_recognition', completed: true, message: '语音识别完成' },
-          { step: 'semantic_analysis', completed: true, message: '语义分析完成' },
-          { step: 'editing_plan', completed: true, message: '剪辑计划生成完成' },
-          { step: 'video_processing', completed: true, message: '视频处理完成' },
-          { step: 'completed', completed: true, message: '处理完成' }
-        ],
-        analysisResult
+        originalDuration: transcription.duration || 0,
+        compressedDuration: transcription.duration || 0,
+        transcription: transcription.text,
+        summary: analysisResult.summary,
+        compressionRatio: '1.0',
       }
+
+      const duration = Date.now() - startTime
+      
+      // 记录性能指标
+      PerformanceMonitor.recordMetrics(operationId, 'video_processing', duration, {
+        filePath,
+        success: true,
+        originalDuration: result.originalDuration,
+        compressedDuration: result.compressedDuration,
+        segmentCount: transcription.segments?.length || 0
+      })
+      
+      logger.performance('Video processing completed', duration, undefined, result, operationId)
+      return result
 
     } catch (error) {
-      console.error('Video processing error:', error)
-      // 确保临时文件被清理
-      await this.cleanupOnError(audioPath)
-      throw new Error(`视频处理失败: ${error}`)
+      const duration = Date.now() - startTime
+      
+      // 记录失败的性能指标
+      PerformanceMonitor.recordMetrics(operationId, 'video_processing', duration, {
+        filePath,
+        success: false,
+        error: error instanceof Error ? error.message : String(error)
+      })
+      
+      logger.error('Video processing failed', error as Error, { filePath, duration }, operationId)
+      
+      if (error instanceof Error && error.message.includes('not found')) {
+        throw ErrorFactory.fileNotFound(filePath)
+      } else if (error instanceof Error && error.message.includes('processing')) {
+        throw ErrorFactory.processingFailed('video_processing', error.message)
+      } else {
+        throw ErrorFactory.internalError('视频处理过程中发生未知错误', { 
+          originalError: error instanceof Error ? error.message : String(error) 
+        })
+      }
     }
   }
 
-  /**
-   * 压缩视频
-   */
   private static async compressVideo(
     inputPath: string,
     outputPath: string,
-    targetDuration?: number
+    analysisResult: any,
+    targetDuration?: number,
+    requestId?: string
   ): Promise<void> {
+    const startTime = Date.now()
+    
     try {
-      let command = `ffmpeg -i "${inputPath}" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k`
+      logger.info('Starting video compression', { inputPath, outputPath }, requestId)
       
-      // 如果指定了目标时长，尝试智能压缩
-      if (targetDuration) {
-        // 这里可以添加基于语义分析的智能剪辑逻辑
-        // 目前先使用基本的时长控制
-        command += ` -t ${targetDuration}`
-      }
+      // 基本的视频压缩命令
+      const compressionCommand = `ffmpeg -i "${inputPath}" -c:v libx264 -crf 23 -c:a aac -b:a 128k "${outputPath}"`
       
-      command += ` "${outputPath}"`
+      logger.debug('Executing compression command', { command: compressionCommand }, requestId)
+      await execAsync(compressionCommand)
       
-      console.log('执行FFmpeg命令:', command)
-      await execAsync(command)
+      const duration = Date.now() - startTime
+      logger.performance('Video compression completed', duration, undefined, { inputPath, outputPath }, requestId)
       
     } catch (error) {
-      console.error('FFmpeg compression error:', error)
-      throw new Error(`视频压缩失败: ${error}`)
+      const duration = Date.now() - startTime
+      logger.error('Video compression failed', error as Error, { inputPath, outputPath, duration }, requestId)
+      throw ErrorFactory.processingFailed('video_compression', `压缩失败: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
-  /**
-   * 错误处理：确保临时文件被清理
-   */
-  private static async cleanupOnError(audioPath: string | null): Promise<void> {
-    if (audioPath) {
+  private static cleanupTempFiles(filePaths: string[], requestId?: string): void {
+    logger.debug('Cleaning up temporary files', { filePaths }, requestId)
+    
+    filePaths.forEach(filePath => {
       try {
-        ServerAudioProcessor.cleanupFile(audioPath)
-      } catch (cleanupError) {
-        console.warn('清理临时文件失败:', cleanupError)
+        if (existsSync(filePath)) {
+          unlinkSync(filePath)
+          logger.debug('Temporary file deleted', { filePath }, requestId)
+        }
+      } catch (error) {
+        logger.warn('Failed to delete temporary file', { filePath, error: (error as Error).message }, requestId)
+        // 清理失败不应该阻止程序执行
       }
-    }
+    })
   }
 }

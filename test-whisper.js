@@ -26,10 +26,10 @@ async function testWhisperIntegration() {
     // 2. 创建测试音频文件
     console.log('\n2. 创建测试音频文件...')
     const testAudioPath = join(process.cwd(), 'uploads', 'test-audio.wav')
-    
+
     // 使用FFmpeg生成一个简单的测试音频
     const testCommand = `ffmpeg -f lavfi -i "sine=frequency=1000:duration=5" -ac 1 -ar 16000 "${testAudioPath}"`
-    
+
     try {
       await execAsync(testCommand)
       if (existsSync(testAudioPath)) {
@@ -39,7 +39,7 @@ async function testWhisperIntegration() {
       }
     } catch (error) {
       console.log('⚠️  无法创建测试音频，使用现有文件或模拟模式')
-      
+
       // 检查是否有现有的测试文件
       const existingTestVideo = join(process.cwd(), 'uploads', 'test-video.mp4')
       if (existsSync(existingTestVideo)) {
@@ -57,7 +57,7 @@ async function testWhisperIntegration() {
     // 3. 测试语音识别
     console.log('\n3. 测试语音识别功能...')
     const transcription = await WhisperService.transcribeAudio(testAudioPath)
-    
+
     console.log('✅ 语音识别完成')
     console.log(`   识别语言: ${transcription.language}`)
     console.log(`   总时长: ${transcription.duration}秒`)
@@ -67,7 +67,7 @@ async function testWhisperIntegration() {
     // 4. 测试语义分析
     console.log('\n4. 测试语义分析功能...')
     const analysis = WhisperService.analyzeTranscription(transcription)
-    
+
     console.log('✅ 语义分析完成')
     console.log(`   总分段: ${analysis.totalSegments}`)
     console.log(`   重要分段: ${analysis.importantSegments}`)
@@ -82,7 +82,6 @@ async function testWhisperIntegration() {
     }
 
     console.log('\n🎉 Whisper语音识别集成测试完成！')
-
   } catch (error) {
     console.error('❌ 测试失败:', error.message)
     console.error(error.stack)
@@ -91,10 +90,10 @@ async function testWhisperIntegration() {
 
 async function testMockWhisper() {
   console.log('\n🧪 测试模拟Whisper模式...')
-  
+
   // 直接调用模拟模式
   const mockTranscription = WhisperService.getMockTranscription('mock-audio.wav')
-  
+
   console.log('✅ 模拟语音识别完成')
   console.log(`   识别语言: ${mockTranscription.language}`)
   console.log(`   总时长: ${mockTranscription.duration}秒`)
@@ -103,7 +102,7 @@ async function testMockWhisper() {
 
   // 测试语义分析
   const analysis = WhisperService.analyzeTranscription(mockTranscription)
-  
+
   console.log('✅ 语义分析完成')
   console.log(`   总分段: ${analysis.totalSegments}`)
   console.log(`   重要分段: ${analysis.importantSegments}`)

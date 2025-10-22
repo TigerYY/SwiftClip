@@ -1,31 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { join } from 'path'
-import { existsSync } from 'fs'
 import { ServerVideoProcessor } from '@/lib/server/videoProcessor'
+import { ErrorHandler, ErrorFactory, InputValidator } from '@/lib/server/errorHandler'
 
 export async function POST(request: NextRequest) {
+  const requestId = `process_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
   try {
-    const { filename, targetDuration = 300 } = await request.json()
+    const { filename, targetDuration } = await request.json()
 
     if (!filename) {
-      return NextResponse.json({ error: 'Filename is required' }, { status: 400 })
+      const error = ErrorFactory.validationError('缺少文件名参数')
+      return ErrorHandler.createResponse(ErrorHandler.handle(error, requestId), requestId)
     }
 
-    // Check if file exists
-    const filepath = join(process.cwd(), 'uploads', filename)
-    if (!existsSync(filepath)) {
-      return NextResponse.json({ error: 'File not found' }, { status: 404 })
+    // 验证文件名安全性
+    const filenameValidation = InputValidator.validateFilename(filename)
+    if (!filenameValidation.isValid) {
+      const error = ErrorFactory.validationError(filenameValidation.error!)
+      return ErrorHandler.createResponse(ErrorHandler.handle(error, requestId), requestId)
     }
 
-    // 实际处理视频
-    const result = await ServerVideoProcessor.processVideo(filepath, targetDuration)
+    // 验证处理选项
+    const optionsValidation = InputValidator.validateProcessingOptions({ targetDuration })
+    if (!optionsValidation.isValid) {
+      const error = ErrorFactory.validationError(optionsValidation.error!)
+      return ErrorHandler.createResponse(ErrorHandler.handle(error, requestId), requestId)
+    }
 
-    // 返回最终结果
-    return NextResponse.json(result)
+    // 构建完整文件路径
+    const filePath = require('path').join(process.cwd(), 'uploads', filename)
+    const result = await ServerVideoProcessor.processVideo(
+      filePath,
+      optionsValidation.validOptions?.targetDuration
+    )
 
+    return ErrorHandler.createSuccessResponse(result, requestId)
   } catch (error) {
-    console.error('Processing error:', error)
-    return NextResponse.json({ error: 'Processing failed' }, { status: 500 })
+    const apiError = ErrorHandler.handle(error, requestId)
+    return ErrorHandler.createResponse(apiError, requestId)
   }
 }
 

@@ -4,7 +4,7 @@ const execAsync = promisify(exec)
 
 async function testIntegration() {
   console.log('🧪 开始集成测试...\n')
-  
+
   // 测试1: 检查FFmpeg
   console.log('1. 测试FFmpeg安装...')
   try {
@@ -30,7 +30,7 @@ async function testIntegration() {
   const fs = require('fs')
   const path = require('path')
   const uploadsDir = path.join(__dirname, 'uploads')
-  
+
   if (fs.existsSync(uploadsDir)) {
     console.log('✅ 上传目录存在')
   } else {
@@ -44,7 +44,10 @@ async function testIntegration() {
   if (fs.existsSync(envPath)) {
     const envContent = fs.readFileSync(envPath, 'utf8')
     console.log('✅ 环境文件存在')
-    console.log('   环境配置:', envContent.split('\n').filter(line => line.trim()))
+    console.log(
+      '   环境配置:',
+      envContent.split('\n').filter(line => line.trim())
+    )
   } else {
     console.log('❌ 环境文件不存在')
     return false
@@ -69,7 +72,7 @@ async function testIntegration() {
   console.log('   - 环境配置: 已设置')
   console.log('   - TypeScript: 编译通过')
   console.log('\n🚀 系统已准备好进行视频处理！')
-  
+
   return true
 }
 

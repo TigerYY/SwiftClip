@@ -22,7 +22,7 @@ export default function Home() {
       setUploadProgress(0)
       setResult(null)
       setShowPreview(false)
-      
+
       // 创建预览URL
       const url = URL.createObjectURL(file)
       setPreviewUrl(url)
@@ -40,7 +40,7 @@ export default function Home() {
       // 步骤1: 上传文件
       setProgress(10)
       setCurrentStep('上传视频文件中...')
-      
+
       const formData = new FormData()
       formData.append('file', selectedFile)
 
@@ -78,7 +78,7 @@ export default function Home() {
         { progress: 40, step: '语音识别中...' },
         { progress: 60, step: '语义分析中...' },
         { progress: 80, step: '生成剪辑方案...' },
-        { progress: 90, step: '视频压缩处理中...' }
+        { progress: 90, step: '视频压缩处理中...' },
       ]
 
       for (const { progress: stepProgress, step } of steps) {
@@ -91,11 +91,14 @@ export default function Home() {
       setResult(processResult)
       setProgress(100)
       setCurrentStep('处理完成！')
-
     } catch (error) {
-      console.error('Error:', error)
+      // TODO: 实现结构化日志记录系统 - 记录处理错误
       setCurrentStep('处理失败，请重试')
       setProgress(0)
+      // 显示用户友好的错误信息
+      if (error instanceof Error) {
+        setCurrentStep(`处理失败: ${error.message}`)
+      }
     } finally {
       setIsProcessing(false)
     }
@@ -109,14 +112,14 @@ export default function Home() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     const files = e.dataTransfer.files
     if (files.length > 0 && files[0].type.startsWith('video/')) {
       setSelectedFile(files[0])
       setUploadProgress(0)
       setResult(null)
       setShowPreview(false)
-      
+
       // 创建预览URL
       const url = URL.createObjectURL(files[0])
       setPreviewUrl(url)
@@ -161,7 +164,7 @@ export default function Home() {
               <p className="text-gray-300">支持MP4、WebM等视频格式，最大500MB</p>
             </div>
 
-            <div 
+            <div
               className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
               onDragOver={handleDragOver}
               onDrop={handleDrop}
@@ -180,9 +183,7 @@ export default function Home() {
               <p className="text-lg mb-2">
                 {selectedFile ? selectedFile.name : '点击选择或拖拽视频文件到这里'}
               </p>
-              <p className="text-sm text-gray-400">
-                支持MP4, WebM, MOV格式，最大500MB
-              </p>
+              <p className="text-sm text-gray-400">支持MP4, WebM, MOV格式，最大500MB</p>
             </div>
 
             {selectedFile && (
@@ -191,7 +192,7 @@ export default function Home() {
                   <span>文件大小: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
                   <span>类型: {selectedFile.type}</span>
                 </div>
-                
+
                 <div className="flex space-x-4">
                   <button
                     onClick={togglePreview}
@@ -200,7 +201,7 @@ export default function Home() {
                     <Eye className="w-4 h-4 mr-2" />
                     {showPreview ? '隐藏预览' : '预览视频'}
                   </button>
-                  
+
                   <button
                     onClick={handleProcessVideo}
                     disabled={isProcessing}
@@ -209,7 +210,7 @@ export default function Home() {
                     {isProcessing ? '处理中...' : '开始智能压缩'}
                   </button>
                 </div>
-                
+
                 {/* 视频预览区域 */}
                 {showPreview && previewUrl && (
                   <div className="mt-4 p-4 bg-white/5 rounded-xl border border-white/10">
@@ -234,20 +235,20 @@ export default function Home() {
           <section className="max-w-4xl mx-auto mb-16">
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
               <h3 className="text-xl font-semibold mb-6 text-center">处理进度</h3>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-300">当前步骤</span>
                   <span className="font-medium">{currentStep}</span>
                 </div>
-                
+
                 <div className="w-full bg-gray-700 rounded-full h-3">
                   <div
                     className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-gray-300">完成进度</span>
                   <span className="font-medium">{progress}%</span>
@@ -276,7 +277,8 @@ export default function Home() {
                     <span className="font-medium">原始时长</span>
                   </div>
                   <p className="text-2xl font-bold">
-                    {Math.floor(result.originalDuration / 60)}分{Math.round(result.originalDuration % 60)}秒
+                    {Math.floor(result.originalDuration / 60)}分
+                    {Math.round(result.originalDuration % 60)}秒
                   </p>
                 </div>
 
@@ -286,7 +288,8 @@ export default function Home() {
                     <span className="font-medium">压缩后时长</span>
                   </div>
                   <p className="text-2xl font-bold text-green-400">
-                    {Math.floor(result.compressedDuration / 60)}分{Math.round(result.compressedDuration % 60)}秒
+                    {Math.floor(result.compressedDuration / 60)}分
+                    {Math.round(result.compressedDuration % 60)}秒
                   </p>
                 </div>
 
@@ -303,7 +306,9 @@ export default function Home() {
                     <FileVideo className="w-5 h-5 text-purple-400 mr-2" />
                     <span className="font-medium">输出文件</span>
                   </div>
-                  <p className="text-sm font-mono text-gray-300 truncate">{result.outputFilename}</p>
+                  <p className="text-sm font-mono text-gray-300 truncate">
+                    {result.outputFilename}
+                  </p>
                 </div>
               </div>
 
@@ -314,18 +319,24 @@ export default function Home() {
                     <Brain className="w-5 h-5 mr-2" />
                     语义分析结果
                   </h4>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-400">{result.analysisResult.totalSegments}</div>
+                      <div className="text-2xl font-bold text-blue-400">
+                        {result.analysisResult.totalSegments}
+                      </div>
                       <div className="text-sm text-gray-300">总分段</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-400">{result.analysisResult.importantSegments}</div>
+                      <div className="text-2xl font-bold text-green-400">
+                        {result.analysisResult.importantSegments}
+                      </div>
                       <div className="text-sm text-gray-300">重要内容</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-red-400">{result.analysisResult.redundantSegments}</div>
+                      <div className="text-2xl font-bold text-red-400">
+                        {result.analysisResult.redundantSegments}
+                      </div>
                       <div className="text-sm text-gray-300">冗余内容</div>
                     </div>
                   </div>
@@ -345,8 +356,8 @@ export default function Home() {
                     <Download className="w-5 h-5 mr-2 inline" />
                     下载视频
                   </button>
-                  
-                  <button 
+
+                  <button
                     onClick={() => setShowPreview(!showPreview)}
                     className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105"
                   >
@@ -354,7 +365,7 @@ export default function Home() {
                     {showPreview ? '隐藏预览' : '预览视频'}
                   </button>
                 </div>
-                
+
                 {/* 压缩后视频预览 */}
                 {showPreview && result.outputFilename && (
                   <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
@@ -390,8 +401,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">AI智能识别</h3>
               <p className="text-gray-600 text-sm">
-                使用OpenAI Whisper模型精准识别语音内容，
-                保留核心信息点
+                使用OpenAI Whisper模型精准识别语音内容， 保留核心信息点
               </p>
             </div>
 
@@ -401,8 +411,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">智能剪辑</h3>
               <p className="text-gray-600 text-sm">
-                自动删除冗余内容，保持逻辑连贯性，
-                时长精准控制
+                自动删除冗余内容，保持逻辑连贯性， 时长精准控制
               </p>
             </div>
 
@@ -412,8 +421,7 @@ export default function Home() {
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">高质量输出</h3>
               <p className="text-gray-600 text-sm">
-                保持原始视频质量，支持多种格式导出，
-                移动端友好
+                保持原始视频质量，支持多种格式导出， 移动端友好
               </p>
             </div>
           </div>
@@ -423,9 +431,7 @@ export default function Home() {
         <section id="how-it-works" className="py-16 bg-white rounded-xl shadow-sm">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">工作原理</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              四步完成智能视频压缩，简单高效
-            </p>
+            <p className="text-gray-600 max-w-2xl mx-auto">四步完成智能视频压缩，简单高效</p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8">
@@ -433,7 +439,7 @@ export default function Home() {
               { step: '1', title: '语音识别', desc: 'Whisper模型转文字' },
               { step: '2', title: '语义分析', desc: 'AI识别核心内容' },
               { step: '3', title: '剪辑方案', desc: '生成最优时间线' },
-              { step: '4', title: '视频处理', desc: 'FFmpeg精准剪辑' }
+              { step: '4', title: '视频处理', desc: 'FFmpeg精准剪辑' },
             ].map((item, index) => (
               <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -451,9 +457,7 @@ export default function Home() {
       <footer className="bg-white border-t border-gray-200 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <p className="text-gray-600">
-              © 2024 口播XX - 智能视频压缩工具
-            </p>
+            <p className="text-gray-600">© 2024 口播XX - 智能视频压缩工具</p>
           </div>
         </div>
       </footer>

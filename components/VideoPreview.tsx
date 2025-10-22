@@ -10,7 +10,12 @@ interface VideoPreviewProps {
   autoPlay?: boolean
 }
 
-export function VideoPreview({ videoUrl, title, className = '', autoPlay = false }: VideoPreviewProps) {
+export function VideoPreview({
+  videoUrl,
+  title,
+  className = '',
+  autoPlay = false,
+}: VideoPreviewProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
@@ -107,11 +112,11 @@ export function VideoPreview({ videoUrl, title, className = '', autoPlay = false
         {/* 底部控制栏 */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           {/* 进度条 */}
-          <div 
+          <div
             className="w-full h-2 bg-gray-600 rounded-full mb-2 cursor-pointer"
             onClick={handleSeek}
           >
-            <div 
+            <div
               className="h-full bg-blue-500 rounded-full transition-all duration-100"
               style={{ width: `${progress}%` }}
             />
@@ -123,22 +128,14 @@ export function VideoPreview({ videoUrl, title, className = '', autoPlay = false
                 onClick={togglePlay}
                 className="text-white hover:text-blue-400 transition-colors"
               >
-                {isPlaying ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               </button>
 
               <button
                 onClick={toggleMute}
                 className="text-white hover:text-blue-400 transition-colors"
               >
-                {isMuted ? (
-                  <VolumeX className="w-4 h-4" />
-                ) : (
-                  <Volume2 className="w-4 h-4" />
-                )}
+                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
               </button>
 
               <span className="text-sm text-gray-300">

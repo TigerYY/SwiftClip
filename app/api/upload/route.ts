@@ -1,52 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { writeFile } from 'fs/promises'
-import { join } from 'path'
+import path from 'path'
+import { ErrorHandler, ErrorFactory, InputValidator } from '@/lib/server/errorHandler'
 
 export async function POST(request: NextRequest) {
+  const requestId = `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
 
     if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
+      const error = ErrorFactory.validationError('没有找到文件')
+      return ErrorHandler.createResponse(ErrorHandler.handle(error, requestId), requestId)
     }
 
-    // Validate file type
-    const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime']
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
+    // 验证文件
+    const fileValidation = InputValidator.validateFile(file)
+    if (!fileValidation.isValid) {
+      const error = ErrorFactory.validationError(fileValidation.error!)
+      return ErrorHandler.createResponse(ErrorHandler.handle(error, requestId), requestId)
     }
 
-    // Validate file size (max 500MB)
-    const maxSize = 500 * 1024 * 1024
-    if (file.size > maxSize) {
-      return NextResponse.json({ error: 'File too large' }, { status: 400 })
+    // 生成唯一文件名
+    const timestamp = Date.now()
+    const originalName = file.name
+    const extension = path.extname(originalName)
+    const filename = `${timestamp}${extension}`
+
+    // 验证文件名安全性
+    const filenameValidation = InputValidator.validateFilename(filename)
+    if (!filenameValidation.isValid) {
+      const error = ErrorFactory.validationError(filenameValidation.error!)
+      return ErrorHandler.createResponse(ErrorHandler.handle(error, requestId), requestId)
     }
 
-    // Convert file to buffer
+    // 确保上传目录存在
+    const uploadDir = path.join(process.cwd(), 'uploads')
+    const filePath = path.join(uploadDir, filename)
+
+    // 保存文件
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+    await writeFile(filePath, buffer)
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'uploads')
-    
-    // Save file
-    const filename = `${Date.now()}-${file.name}`
-    const filepath = join(uploadsDir, filename)
-    
-    await writeFile(filepath, buffer)
-
-    return NextResponse.json({ 
-      success: true, 
+    const responseData = {
       filename,
-      originalName: file.name,
+      originalName,
       size: file.size,
-      type: file.type
-    })
+      type: file.type,
+    }
 
+    return ErrorHandler.createSuccessResponse(responseData, requestId)
   } catch (error) {
-    console.error('Upload error:', error)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    const apiError = ErrorHandler.handle(error, requestId)
+    return ErrorHandler.createResponse(apiError, requestId)
   }
 }
 

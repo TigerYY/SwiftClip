@@ -4,16 +4,16 @@ const path = require('path')
 
 async function testVideoProcessing() {
   console.log('🎬 测试视频处理功能...\n')
-  
+
   // 创建一个测试视频文件（使用FFmpeg生成一个简单的测试视频）
   const testVideoPath = path.join(__dirname, 'uploads', 'test-video.mp4')
-  
+
   if (!existsSync(testVideoPath)) {
     console.log('📹 创建测试视频...')
     const { exec } = require('child_process')
     const { promisify } = require('util')
     const execAsync = promisify(exec)
-    
+
     try {
       // 使用FFmpeg创建一个10秒的测试视频
       const command = `ffmpeg -f lavfi -i testsrc=duration=10:size=640x360:rate=30 -f lavfi -i sine=frequency=440:duration=10 -c:v libx264 -c:a aac "${testVideoPath}"`
@@ -26,11 +26,11 @@ async function testVideoProcessing() {
   }
 
   console.log('\n⚙️ 开始视频处理测试...')
-  
+
   try {
     // 测试视频处理
     const result = await ServerVideoProcessor.processVideo(testVideoPath, 5) // 目标时长5秒
-    
+
     console.log('✅ 视频处理成功！')
     console.log('\n📊 处理结果:')
     console.log(`   原始时长: ${result.originalDuration.toFixed(1)} 秒`)
@@ -38,7 +38,7 @@ async function testVideoProcessing() {
     console.log(`   压缩比例: ${result.compressionRatio}`)
     console.log(`   输出文件: ${result.outputFilename}`)
     console.log(`   处理状态: ${result.success ? '成功' : '失败'}`)
-    
+
     // 检查输出文件是否存在
     const outputPath = path.join(__dirname, 'uploads', result.outputFilename)
     if (existsSync(outputPath)) {
@@ -47,10 +47,9 @@ async function testVideoProcessing() {
       console.log('❌ 输出文件不存在')
       return false
     }
-    
+
     console.log('\n🎉 视频处理功能测试通过！')
     return true
-    
   } catch (error) {
     console.log('❌ 视频处理失败:', error.message)
     return false

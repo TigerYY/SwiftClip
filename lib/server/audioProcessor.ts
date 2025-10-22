@@ -2,6 +2,7 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 import { join } from 'path'
 import { existsSync, unlinkSync } from 'fs'
+import { ErrorFactory } from './errorHandler'
 
 const execAsync = promisify(exec)
 
@@ -11,20 +12,22 @@ export class ServerAudioProcessor {
    */
   static async extractAudio(videoPath: string): Promise<string> {
     const audioPath = videoPath.replace(/\.\w+$/, '.wav')
-    
+
     try {
       const command = `ffmpeg -i "${videoPath}" -vn -acodec pcm_s16le -ar 16000 -ac 1 "${audioPath}"`
       await execAsync(command)
-      
+
       if (existsSync(audioPath)) {
         return audioPath
       } else {
         throw new Error('音频提取失败')
       }
-      
     } catch (error) {
-      console.error('Audio extraction error:', error)
-      throw new Error(`音频提取失败: ${error}`)
+      // TODO: 实现结构化日志记录系统 - 记录音频提取错误
+      throw ErrorFactory.processingFailed(
+        'audio_extraction',
+        error instanceof Error ? error.message : 'Unknown error'
+      )
     }
   }
 
@@ -35,17 +38,19 @@ export class ServerAudioProcessor {
     try {
       const command = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${videoPath}"`
       const { stdout } = await execAsync(command)
-      
+
       const duration = parseFloat(stdout.trim())
       if (isNaN(duration)) {
         throw new Error('无法解析视频时长')
       }
-      
+
       return duration
-      
     } catch (error) {
-      console.error('Duration detection error:', error)
-      throw new Error(`获取视频时长失败: ${error}`)
+      // TODO: 实现结构化日志记录系统 - 记录时长检测错误
+      throw ErrorFactory.processingFailed(
+        'duration_detection',
+        error instanceof Error ? error.message : 'Unknown error'
+      )
     }
   }
 
@@ -57,7 +62,8 @@ export class ServerAudioProcessor {
       try {
         unlinkSync(filePath)
       } catch (error) {
-        console.warn('清理文件失败:', filePath, error)
+        // TODO: 实现结构化日志记录系统
+        // 文件清理失败不应该阻止程序继续执行
       }
     }
   }

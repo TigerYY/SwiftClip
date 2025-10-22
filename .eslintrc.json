@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "next/core-web-vitals"
+  ],
+  "rules": {
+    "prefer-const": "error",
+    "no-var": "error",
+    "camelcase": ["error", { "properties": "never" }],
+    "consistent-return": "error",
+    "no-console": "warn",
+    "no-debugger": "error"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  }
+}
